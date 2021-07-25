@@ -1,7 +1,10 @@
+#!/usr/bin/python3
+
 import traceback
 import minimalmodbus
 
-power_supply_port = "COM12"
+#power_supply_port = "COM12" # windows
+power_supply_port = "/dev/ttyUSB1" # linux
 
 hanmatek=minimalmodbus.Instrument(power_supply_port, 1)    # port name, slave address
 hanmatek.serial.baudrate=9600

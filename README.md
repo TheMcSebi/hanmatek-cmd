@@ -3,13 +3,14 @@ Quick and dirty Python implementation to interactively control a Hanmatek Bench 
 
 ## Background
 The power supply sits behind my monitor, therefore I cannot easily access the built in interface. Hence I created this little and very simple python script that implements the most basic functionality I use on a day to day basis.  
-It uses the minimalmodbus library to read and write data over the power supplies USB interface.  
+It uses the minimalmodbus library to read and write data over the power supplies USB interface.
 
-The code was written and tested on windows, but should theoretically work on linux aswell, provided the correct /dev/ is used.
+## Installation
+Install the minimalmodbus library by running `pip -r requirements.txt`.
+On Linux you may also need to grant permission to your user to use the serial interface (/dev/ttyUSB0 in my case).
 
 ## Usage
-
-First, make sure the serial port defined in line 4 is correct. Then just run the script.
+First, make sure the serial port defined at the beginning of the script is correct. Then just run the script.
 
 ```
 command reference:
