@@ -10,6 +10,7 @@ It uses the minimalmodbus library to read and write data over the power supplies
 ## Installation
 Install the minimalmodbus library by running `pip -r requirements.txt`.
 On Linux you may also need to grant permission to your user to use the serial interface (/dev/ttyUSB0 in my case).
+To do this, add the group "dailup" to your linux user account and restart your shell.
 
 ## Usage
 First, make sure the serial port defined at the beginning of the script is correct. Then just run the script.
