@@ -14,6 +14,7 @@ class HanmatekControl:
         self._current_voltage = 0.0
         self._current_current = 0.0
         self._current_power = 0.0
+        self._read()
     
     def _read(self, display = False):
         value = self._hanmatek.read_registers(0x00, 0x33)
@@ -95,30 +96,33 @@ class HanmatekControl:
         except:
             raise RuntimeError(traceback.format_exc())
     
-    def get_status(self):
-        self._read()
+    def get_status(self, cached = False):
+        if not cached: self._read()
         return self._status
     
-    def get_power(self):
-        self._read()
+    def get_power(self, cached = False):
+        if not cached: self._read()
         return self._current_power
         
-    def get_current(self):
-        self._read()
+    def get_current(self, cached = False):
+        if not cached: self._read()
         return self._current_current
 
-    def get_voltage(self):
-        self._read()
+    def get_voltage(self, cached = False):
+        if not cached: self._read()
         return self._current_voltage
     
-    def show(self):
-        self._read()
+    def show(self, cached = False):
+        if not cached: self._read()
         print(f"output enabled: {self._status}\n")
         print(f"target voltage: {self._target_voltage}")
         print(f"target current: {self._target_current}\n")
         print(f"current voltage: {self._current_voltage}")
         print(f"current current: {self._current_current}")
         print(f"current power: {self._current_power}")
+
+    def sync_device(self):
+        self._read()
         
     def __del__(self):
         self._hanmatek.serial.close()
