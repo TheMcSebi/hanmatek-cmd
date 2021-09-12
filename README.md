@@ -1,5 +1,7 @@
-# hanmatek-cmd
+# hanmatek-cmd (cli version)
 Quick and dirty Python implementation to interactively control a Hanmatek Bench Power Supply
+
+For a [library version](#lib_ver_), see below.
 
 ## Background
 The power supply sits behind my monitor, therefore I cannot easily access the built in interface. Hence I created this little and very simple python script that implements the most basic functionality I use on a day to day basis.  
@@ -35,3 +37,18 @@ If no new input is provided and the enter button is pressed, the previous comman
 * Decrease voltage by 0.1V: `--`
 * Display current configuration: `r`
 * Quit the script: `q`
+
+
+# HanmatekControl (Library version)
+<a name="lib_ver"></a>
+Quick and dirty Python implementation to programmatically control a Hanmatek Bench Power Supply
+
+## Usage example
+An example for using the [Robot Framework](https://robotframework.org/) with this library is also included
+
+```python
+h = HanmatekControl(port)
+h.set_voltage(5)
+h.set_power(True)
+h.set_current(0.5)
+```
