@@ -30,12 +30,12 @@ If no new input is provided and the enter button is pressed, the previous comman
 ### Some examples in reasonable order
 
 * Running the script: `python hanmatek-cmd.py`
-* Setting voltage to 3.3V: `sv 3.3`
-* Setting current limiter to 0.2A: `sc 0.2`
+* Setting voltage to 3.3 V: `sv 3.3`
+* Setting current limiter to 0.2 A: `sc 0.2`
 * Turn on the power: `t`
 * Increase voltage by 1V: `+++`
 * Decrease voltage by 0.1V: `--`
-* Display current configuration: `r`
+* Display current status: `r`
 * Quit the script: `q`
 
 
@@ -44,11 +44,19 @@ If no new input is provided and the enter button is pressed, the previous comman
 Quick and dirty Python implementation to programmatically control a Hanmatek Bench Power Supply
 
 ## Usage example
-An example for using the [Robot Framework](https://robotframework.org/) with this library is also included
 
 ```python
 h = HanmatekControl(port)
 h.set_voltage(5)
 h.set_power(True)
 h.set_current(0.5)
+```
+
+## Robot Framework
+An example (DeviceControlTest.robot) for this library using the [Robot Framework](https://robotframework.org/) is also included. To run it, run the following command after installing [robotframework](https://pypi.org/project/robotframework/) through pip.
+
+```bash
+pip install robotframework
+
+robot DeviceControlTest.robot
 ```
