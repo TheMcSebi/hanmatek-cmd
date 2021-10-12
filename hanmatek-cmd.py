@@ -160,7 +160,7 @@ def main():
         elif cmd[0] == "q" or cmd[0] == "x": # quit
             print("quit")
             hanmatek.serial.close()
-            exit()
+            break
 
         elif "+" in cmd[0]: # increase voltage
             update_data(False)
