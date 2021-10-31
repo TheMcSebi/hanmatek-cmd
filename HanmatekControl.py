@@ -16,7 +16,10 @@ class HanmatekControl:
         self._current_power = 0.0
         self._read()
     
-    def _read(self, display = False):
+    def _read(self):
+        """
+        Reads device registers.
+        """
         value = self._hanmatek.read_registers(0x00, 0x33)
         
         #print("device power: " + str(bool(value[0x01])))
@@ -67,6 +70,11 @@ class HanmatekControl:
         return (value[0x12] << 16) + value[0x13]
     
     def set_voltage(self, val):
+        """
+        Set target voltage in Volts.
+        
+        :param val: Target voltage in Volts
+        """
         try:
             self._hanmatek.write_register(0x30, round(float(val) * 100))
             self._read()
@@ -74,7 +82,11 @@ class HanmatekControl:
             raise RuntimeError(traceback.format_exc())
 
     def set_current(self, val):
+        """
+        Set current limit in Ampere.
         
+        :param val: Current limit in Ampere
+        """
         try:
             self._hanmatek.write_register(0x31, round(float(val) * 1000))
             self._read()
@@ -82,6 +94,11 @@ class HanmatekControl:
             raise RuntimeError(traceback.format_exc())
     
     def set_status(self, enabled = None):
+        """
+        Toggle device output on or off.
+        
+        :param enabled: Target device state. Toggled if omitted.
+        """
         if enabled == None: # if no value is provided, toggle the device
             if self._status:
                 enabled = False
@@ -97,31 +114,93 @@ class HanmatekControl:
             raise RuntimeError(traceback.format_exc())
     
     def get_status(self, cached = False):
+        """
+        Check if the device is currently enabled.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
         if not cached: self._read()
         return self._status
     
     def get_power(self, cached = False):
+        """
+        Get current device power in Watts.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
         if not cached: self._read()
         return self._current_power
         
     def get_current(self, cached = False):
+        """
+        Get current current in Ampere.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
         if not cached: self._read()
         return self._current_current
 
+    def get_target_current(self, cached = False):
+        """
+        Get target current in Ampere.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
+        if not cached: self._read()
+        return self._target_current
+
     def get_voltage(self, cached = False):
+        """
+        Get current voltage in Volts.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
         if not cached: self._read()
         return self._current_voltage
+
+    def get_target_voltage(self, cached = False):
+        """
+        Get target voltage in Volts.
+        
+        :param cached: skip device sync, useful when reading many values at once
+        """
+        if not cached: self._read()
+        return self._target_voltage
     
     def show(self, cached = False):
+        """
+        Print various data from the device.
+
+        :param cached: skip device sync, useful when reading many values at once
+        """
         if not cached: self._read()
         print(f"output enabled: {self._status}\n")
-        print(f"target voltage: {self._target_voltage}")
-        print(f"target current: {self._target_current}\n")
-        print(f"current voltage: {self._current_voltage}")
-        print(f"current current: {self._current_current}")
-        print(f"current power: {self._current_power}")
+        print(f"target voltage: {self._target_voltage} V")
+        print(f"target current: {self._target_current} A\n")
+        print(f"current voltage: {self._current_voltage} V")
+        print(f"current current: {self._current_current} A")
+        print(f"current power: {self._current_power} W")
+    
+    def print_amp_meter(self, current : float = None, width : int = 30):
+        """
+        :param current: value
+        :param width: how many characters the display should be wide
+        """
+        if current == None:
+            current = self.get_current()
+        print(f"{current: >6} A: |", end="")
+        maxnum = int(self._target_current*width)
+        num = int(current/self._target_current*width)
+        for i in range(0, num):
+            print("#", end="")
+        for i in range(0, maxnum-num):
+            print(" ", end="")
+        print("|")
 
     def sync_device(self):
+        """
+        Read device registers.
+        """
         self._read()
         
     def __del__(self):
