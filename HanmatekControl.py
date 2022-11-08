@@ -181,22 +181,28 @@ class HanmatekControl:
         print(f"current current: {self._current_current} A")
         print(f"current power: {self._current_power} W")
     
-    def print_amp_meter(self, current : float = None, width : int = 30):
+    def render_amp_meter(self, current : float = None, power : float = None, voltage : float = None, width : int = 30):
         """
         :param current: value
         :param width: how many characters the display should be wide
         """
         if current == None:
             current = self.get_current()
-        print(f"{current: >6} A: |", end="")
-        maxnum = int(self._target_current*width)
-        num = int(current/self._target_current*width)
+        if power == None:
+            power = self.get_power(True)
+        if voltage == None:
+            voltage = self.get_voltage(True)
+        
+        ret = f"{current: >6} A / {str(self._target_current) + 'A': <6} |"
+        maxnum = int(width)
+        num = int((current/self._target_current)*width)
         for i in range(0, num):
-            print("#", end="")
-        for i in range(0, maxnum-num):
-            print(" ", end="")
-        print("|")
-
+            ret += "#"
+        for i in range(0, width-num):
+            ret += " "
+        ret += f"| {power: >6} W  @ {voltage} V"
+        return ret
+    
     def sync_device(self):
         """
         Read device registers.
