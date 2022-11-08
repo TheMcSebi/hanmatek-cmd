@@ -10,6 +10,7 @@ else:
     power_supply_port = "COM1" # windows
 
 
+
 is_powered_on = False
 target_voltage = 0.0
 target_current = 0.0

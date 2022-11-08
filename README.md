@@ -48,9 +48,15 @@ Quick and dirty Python implementation to programmatically control a Hanmatek Ben
 
 ```python
 h = HanmatekControl(port)
+
+# set 5v, 1.2a
 h.set_voltage(5)
+h.set_current(1.2)
 h.set_power(True)
-h.set_current(0.5)
+
+# show how much headroom there is to the current limit
+h.print_amp_meter() 
+v = h.get_voltage()
 ```
 
 ## Robot Framework
