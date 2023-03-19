@@ -17,8 +17,12 @@ class HanmatekCmd(cmd.Cmd):
             self.prompt = "Hanmatek (disconnected)> "
     
     def do_help(self, arg: str) -> None:
-        """Display this help text"""
-        print("Documented commands (type help <topic>):")
+        """
+        help
+
+        Display list of commands
+        """
+        print("Available commands (type help <topic>):")
         print("=====================================================")
         print("  help or ?         display this help text")
         print("  ports             list available serial ports")
@@ -38,38 +42,33 @@ class HanmatekCmd(cmd.Cmd):
             line = self._lastcmd
         
         # catch +/- commands
-        if len(line) < 5:
-            try:
-                sign = None
-                if "+" in line:
-                    sign = "+"
-                elif "-" in line:
-                    sign = "-"
-                if sign is not None:
-                    signcount = line.count(sign)
-                    increment = 1 * 0.1 ** (signcount - 1)
+        if 1 <= len(line) <= 4:
+            sign = None
+            if "+" in line:
+                sign = "+"
+            elif "-" in line:
+                sign = "-"
+            if sign is not None:
+                count = line.count(sign)
+                if count >= len(line)-1:
+                    increment = 1 * 0.1 ** (count - 1)
                     if sign == "-":
                         increment *= -1
-                    
-                    if line[-1].isnumeric():
-                        increment *= float(line[-1])
-
-                    self.hc.set_voltage(self.hc.get_target_voltage() + increment)
-                    
+                    try:
+                        if line[-1].isnumeric():
+                            increment *= float(line[-1])
+                        self.hc.set_voltage(self.hc.get_target_voltage() + increment)
+                    except Exception as e:
+                        print(f"Error: {e}")
                     return "pass" # required to prevent the previous command from being executed again
-            except Exception as e:
-                print(f"Error: {e}")
 
         # direct unit setting, e.g. 4.2V
         try:
             if line.lower().endswith("v"):
-                self.hc.set_voltage(float(line[:-1]))
+                self.do_sv(line[:-1])
                 return "pass"
-        except Exception:
-            pass
-        try:
-            if line.lower().endswith("a"):
-                self.hc.set_current(float(line[:-1]))
+            elif line.lower().endswith("a"):
+                self.do_sc(line[:-1])
                 return "pass"
         except Exception:
             pass
@@ -78,19 +77,32 @@ class HanmatekCmd(cmd.Cmd):
         return super().precmd(line)
 
     def do_port(self, arg: str) -> None:
+        """
+        port <portname>
+
+        Configure serial port
+        """
         if self.hc is not None:
             del self.hc
         self.__init__(arg)
     
     def do_ports(self, arg: str) -> None:
-        "List available serial ports"
+        """
+        ports
+
+        List available serial ports
+        """
         if 'linux' in sys.platform.lower():
             os.system("ls /dev/tty*")
         else:
             os.system("mode")
     
     def do_t(self, args: str = "") -> None:
-        "Toggle power"
+        """
+        t
+
+        Toggle power
+        """
         if self.hc is None:
             print("Error: device not connected")
             return
@@ -107,7 +119,11 @@ class HanmatekCmd(cmd.Cmd):
             print(f"Error: {e}")
     
     def do_sv(self, args: str):
-        "Set voltage"
+        """
+        sv <float>
+        
+        Set target voltage
+        """
         if self.hc is None:
             print("Error: device not connected")
             return
@@ -118,7 +134,11 @@ class HanmatekCmd(cmd.Cmd):
             print(f"Error: {e}")
     
     def do_sc(self, args: str):
-        "Set current"
+        """
+        sc <float>
+
+        Set target current
+        """
         if self.hc is None:
             print("Error: device not connected")
             return
@@ -129,7 +149,11 @@ class HanmatekCmd(cmd.Cmd):
             print(f"Error: {e}")
     
     def do_r(self, unused_args: str = ""):
-        "Read status"
+        """
+        r
+
+        Read and print the current device status
+        """
         if self.hc is None:
             print("Error: device not connected")
             return
@@ -137,11 +161,18 @@ class HanmatekCmd(cmd.Cmd):
         self.hc.show()
     
     def do_q(self, unused_args: str = ""):
-        "Quit"
+        """
+        quit
+        
+        Quit the application
+        """
         return True
-
+    
     def do_x(self, unused_args: str = ""):
-        "Quit"
+        """
+        quit
+
+        Quit the application"""
         return True
 
     def do_pass(self, unused_args: str = ""):
