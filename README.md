@@ -26,7 +26,11 @@ You can either specify the serial port by appending ` --port COM5` or ` --port /
     q or x           exit
 
 
-If no new input is provided and the enter button is pressed, the previous command will be repeated. This makes it easy to step the voltage up or down continuously.
+If no new input is provided and the enter button is pressed, the previous command will be repeated. This makes it easy to step the voltage up or down continuously.  
+
+Voltage and current can also be input directly by postfixing the input value with "a" for ampere and "v" for volt, e.g. `4.2v`.  
+
+The increment and decrement commands support an optional multiplier, e.g. `++4` increases the voltage by 0.4V.  
 
 ### Example usage
 
@@ -39,8 +43,7 @@ If no new input is provided and the enter button is pressed, the previous comman
 * Display current status: `r`
 * Quit the script: `q`
 
-Voltage and current can also be input directly by postfixing the input value with "a" for ampere and "v" for volt, e.g. `4.2v`.  
-Additionally, the increment and decrement commands support a multiplier, e.g. `++4` increases the voltage by 0.4v
+
 # HanmatekControl (Library version)
 <a name="lib_ver"></a>
 Python library to programmatically control a Hanmatek bench power supply
