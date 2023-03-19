@@ -1,7 +1,10 @@
-import os, sys, HanmatekControl, time, signal, traceback, cmd
+from os import system
+from sys import platform
+from HanmatekControl import HanmatekControl
+from cmd import Cmd
 from argparse import ArgumentParser
 
-class HanmatekCmd(cmd.Cmd):
+class HanmatekCmd(Cmd):
     def __init__(self, port: str) -> None:
         super().__init__()
         self.prompt = "Hanmatek> "
@@ -9,7 +12,7 @@ class HanmatekCmd(cmd.Cmd):
         self._port = port
         self.hc = None
         try:
-            self.hc = HanmatekControl.HanmatekControl(port=self._port)
+            self.hc = HanmatekControl(port=self._port)
             self.prompt = f"Hanmatek ({self._port})> "
         except Exception as e:
             print("Error setting up device connection: " + str(e))
@@ -92,10 +95,10 @@ class HanmatekCmd(cmd.Cmd):
 
         List available serial ports
         """
-        if 'linux' in sys.platform.lower():
-            os.system("ls /dev/tty*")
+        if 'linux' in platform.lower():
+            system("ls /dev/tty*")
         else:
-            os.system("mode")
+            system("mode")
     
     def do_t(self, args: str = "") -> None:
         """
@@ -179,7 +182,7 @@ class HanmatekCmd(cmd.Cmd):
         pass
 
 if __name__ == "__main__":
-    if 'linux' in sys.platform.lower():
+    if 'linux' in platform.lower():
         default_port = "/dev/ttyUSB0" # linux
     else:
         default_port = "COM1" # windows
