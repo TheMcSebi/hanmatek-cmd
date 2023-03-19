@@ -2,10 +2,11 @@ import minimalmodbus
 import traceback
 
 class HanmatekControl:
-    def __init__(self, port : str = "/dev/ttyUSB0"):
-        self._hanmatek=minimalmodbus.Instrument(port, 1)    # port name, slave address
-        self._hanmatek.serial.baudrate=9600
-        self._hanmatek.serial.timeout=0.5
+    def __init__(self, port: str):
+        self._hanmatek = None
+        self._hanmatek = minimalmodbus.Instrument(port, 1)    # port name, slave address
+        self._hanmatek.serial.baudrate = 9600
+        self._hanmatek.serial.timeout = 0.5
         self._hanmatek.address = 1
 
         self._status = False
@@ -14,13 +15,15 @@ class HanmatekControl:
         self._current_voltage = 0.0
         self._current_current = 0.0
         self._current_power = 0.0
-        self._read()
+        self.sync_device()
     
-    def _read(self):
+    def sync_device(self) -> None:
         """
         Reads device registers.
         """
         value = self._hanmatek.read_registers(0x00, 0x33)
+
+        # left unused registers in the code for future reference
         
         #print("device power: " + str(bool(value[0x01])))
         self._status = bool(value[0x01])
@@ -54,160 +57,164 @@ class HanmatekControl:
         #print("protectCurrent: " + str( value[0x21] / 1000))
         #print("protectPower: " + str( value[0x22]))
         
-        #print()
         #print("target voltage: " + str( value[0x30] / 100))
         self._target_voltage = value[0x30] / 100
         
         #print("target current: " + str( value[0x31] / 1000))
         self._target_current = value[0x31] / 1000
-        
-        #print()
-        
-        #data = read_data(display)
-        
-        
-        #return [bool(value[0x01]), value[0x30] / 100, value[0x31] / 1000] # [power status, voltage, current]
-        return (value[0x12] << 16) + value[0x13]
     
-    def set_voltage(self, val):
+    def set_voltage(self, value: float) -> None:
         """
         Set target voltage in Volts.
         
         :param val: Target voltage in Volts
         """
+        if value < 0:
+            raise ValueError("Voltage must be positive")
+        
         try:
-            self._hanmatek.write_register(0x30, round(float(val) * 100))
-            self._read()
+            self._hanmatek.write_register(0x30, round(float(value) * 100))
+            self.sync_device()
         except:
             raise RuntimeError(traceback.format_exc())
 
-    def set_current(self, val):
+    def set_current(self, value: float) -> None:
         """
         Set current limit in Ampere.
         
         :param val: Current limit in Ampere
         """
+        if value < 0:
+            raise ValueError("Current must be positive")
+        
         try:
-            self._hanmatek.write_register(0x31, round(float(val) * 1000))
-            self._read()
+            self._hanmatek.write_register(0x31, round(float(value) * 1000))
+            self.sync_device()
         except:
             raise RuntimeError(traceback.format_exc())
     
-    def set_status(self, enabled = None):
+    def set_status(self, enabled: bool = None, cached: bool = False) -> None:
         """
         Toggle device output on or off.
         
         :param enabled: Target device state. Toggled if omitted.
         """
-        if enabled == None: # if no value is provided, toggle the device
-            if self._status:
-                enabled = False
-            else:
-                enabled = True
+        if enabled is None: # if no value is provided, toggle the device
+            if not cached: 
+                self.sync_device()
+            self._status = not self._status
         else:
-            enabled = bool(enabled)
-
+            self._status = enabled
+        
         try:
-            self._hanmatek.write_register(1, int(enabled))
-            self._read()
+            self._hanmatek.write_register(0x01, int(self._status))
+            self.sync_device()
         except:
             raise RuntimeError(traceback.format_exc())
     
-    def get_status(self, cached = False):
+    def get_status(self, cached: bool = False) -> bool:
         """
         Check if the device is currently enabled.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._status
     
-    def get_power(self, cached = False):
+    def get_power(self, cached: bool = False) -> float:
         """
         Get current device power in Watts.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._current_power
         
-    def get_current(self, cached = False):
+    def get_current(self, cached: bool = False) -> float:
         """
         Get current current in Ampere.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._current_current
 
-    def get_target_current(self, cached = False):
+    def get_target_current(self, cached: bool = False) -> float:
         """
         Get target current in Ampere.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._target_current
 
-    def get_voltage(self, cached = False):
+    def get_voltage(self, cached: bool = False) -> float:
         """
         Get current voltage in Volts.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._current_voltage
 
-    def get_target_voltage(self, cached = False):
+    def get_target_voltage(self, cached: bool = False) -> float:
         """
         Get target voltage in Volts.
         
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
+        if not cached: 
+            self.sync_device()
         return self._target_voltage
     
-    def show(self, cached = False):
+    def show(self, cached: bool = False) -> float:
         """
-        Print various data from the device.
+        Print current device status.
 
         :param cached: skip device sync, useful when reading many values at once
         """
-        if not cached: self._read()
-        print(f"output enabled: {self._status}\n")
-        print(f"target voltage: {self._target_voltage} V")
-        print(f"target current: {self._target_current} A\n")
-        print(f"current voltage: {self._current_voltage} V")
-        print(f"current current: {self._current_current} A")
-        print(f"current power: {self._current_power} W")
+        if not cached: 
+            self.sync_device()
+        
+        print(f"Device status: {'Enabled' if self._status else 'Disabled'}\n")
+        print(f"Target voltage: {self._target_voltage} V")
+        print(f"Target current: {self._target_current} A\n")
+        print(f"Current voltage: {self._current_voltage} V")
+        print(f"Current current: {self._current_current} A")
+        print(f"Current power: {self._current_power} W")
     
-    def render_amp_meter(self, current : float = None, power : float = None, voltage : float = None, width : int = 30):
+    def render_amp_meter(self, current: float = None, power: float = None, voltage: float = None, width: int = 30) -> str:
         """
-        :param current: value
+        Returns a string that displays the current device status as an amp meter.
+
+        :param current/power/voltage: override values set on the device
         :param width: how many characters the display should be wide
         """
-        if current == None:
+        if current is None:
             current = self.get_current()
-        if power == None:
+        
+        if power is None:
             power = self.get_power(True)
-        if voltage == None:
+        
+        if voltage is None:
             voltage = self.get_voltage(True)
         
         ret = f"{current: >6} A / {str(self._target_current) + 'A': <6} |"
-        maxnum = int(width)
+        
         num = int((current/self._target_current)*width)
         for i in range(0, num):
             ret += "#"
         for i in range(0, width-num):
             ret += " "
         ret += f"| {power: >6} W  @ {voltage} V"
+
         return ret
-    
-    def sync_device(self):
-        """
-        Read device registers.
-        """
-        self._read()
         
     def __del__(self):
-        self._hanmatek.serial.close()
+        if self._hanmatek is not None:
+            self._hanmatek.serial.close()
