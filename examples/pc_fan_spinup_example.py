@@ -3,8 +3,9 @@ from time import sleep, time
 import signal
 import sys
 
-# make a server fan start at a higher voltage
-# when it's spinning, lower the voltage to limit its speed
+# make a server fan start up at a higher voltage
+# when it's spun up, lower the voltage to limit its speed (and noise level)
+
 
 
 sleep_time = 900
