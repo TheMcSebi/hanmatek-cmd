@@ -1,9 +1,9 @@
 *** Settings ***
 Documentation     Example use case for the HanmatekControl library using the Robot Framework
-...               Implementing a test to log drawn current for a set voltage range
+...               Implementing a test to log drawn power for a set voltage range
 
 Library           OperatingSystem
-Library           HanmatekControl.py    /dev/ttyUSB0
+Library           ../HanmatekControl.py    /dev/ttyUSB0
 Library           DateTime
 
 Test Teardown     Power device off
@@ -31,7 +31,7 @@ Power device off
     Set Status    ${False}
 
 
-Run current draw test from ${initial_voltage} to ${voltage_limit} step ${voltage_iteration_step}
+Run power draw test from ${initial_voltage} to ${voltage_limit} step ${voltage_iteration_step}
     [Documentation]    Iterates through the given voltage range and logs all results to the log file defined above as CSV
     ...
     ...                File Format: 
@@ -75,7 +75,7 @@ Run current draw test from ${initial_voltage} to ${voltage_limit} step ${voltage
 #    Sleep                   2
 #    Voltage Should Be       ${4.0}
 
-Run a basic current draw test
-    #Run current draw test from 1 to 2 step 0.3
+Run a basic power draw test
+    #Run power draw test from 1 to 2 step 0.3
     #Sync Device
-    Run current draw test from 0 to 12 step 0.1
+    Run power draw test from 0 to 12 step 0.1

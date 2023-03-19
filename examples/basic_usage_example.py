@@ -1,5 +1,8 @@
-from HanmatekControl import HanmatekControl
 from time import sleep
+
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from HanmatekControl import HanmatekControl
 
 hc = HanmatekControl()
 

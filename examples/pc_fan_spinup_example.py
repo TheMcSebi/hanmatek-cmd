@@ -1,7 +1,9 @@
-from HanmatekControl import HanmatekControl
+import os, sys
 from time import sleep, time
 import signal
-import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from HanmatekControl import HanmatekControl
 
 # make a server fan start up at a higher voltage
 # when it's spun up, lower the voltage to limit its speed (and noise level)
@@ -13,7 +15,7 @@ spinup_voltage = 8
 current_limit = 1.3
 continuous_voltage = 5.5
 
-hc = HanmatekControl(port="COM10")
+hc = HanmatekControl(port="COM8")
 hc.set_status(False)
 
 def signal_handler(sig, frame):
