@@ -18,7 +18,7 @@ class HanmatekCmd(Cmd):
             print("Error setting up device connection: " + str(e))
             print("You can change the serial port using the 'port' command.")
             self.prompt = "Hanmatek (disconnected)> "
-    
+
     def do_help(self, arg: str) -> None:
         """
         help
@@ -37,13 +37,13 @@ class HanmatekCmd(Cmd):
         print("  +[++] / -[--]     increase or decrease voltage")
         print("  q or x            exit")
         print("=====================================================")
-    
+
     def precmd(self, line: str) -> str:
         if not len(line) == 0:
             self._lastcmd = line # intentionally not using self.lastcmd, which is used by cmd.Cmd
         else:
             line = self._lastcmd
-        
+
         # catch +/- commands
         if 1 <= len(line) <= 4:
             sign = None
@@ -88,7 +88,7 @@ class HanmatekCmd(Cmd):
         if self.hc is not None:
             del self.hc
         self.__init__(arg)
-    
+
     def do_ports(self, arg: str) -> None:
         """
         ports
@@ -99,7 +99,7 @@ class HanmatekCmd(Cmd):
             system("ls /dev/tty*")
         else:
             system("mode")
-    
+
     def do_t(self, args: str = "") -> None:
         """
         t
@@ -109,33 +109,33 @@ class HanmatekCmd(Cmd):
         if self.hc is None:
             print("Error: device not connected")
             return
-        
+
         target_state = None
         if args.lower() in ["on", "1", "true", "yes", "enabled"]:
             target_state = True
         elif args.lower() in ["off", "0", "false", "no", "disabled"]:
             target_state = False
-        
+
         try:
             self.hc.set_status(target_state)
         except Exception as e:
             print(f"Error: {e}")
-    
+
     def do_sv(self, args: str):
         """
         sv <float>
-        
+
         Set target voltage
         """
         if self.hc is None:
             print("Error: device not connected")
             return
-        
+
         try:
             self.hc.set_voltage(float(args))
         except Exception as e:
             print(f"Error: {e}")
-    
+
     def do_sc(self, args: str):
         """
         sc <float>
@@ -145,12 +145,12 @@ class HanmatekCmd(Cmd):
         if self.hc is None:
             print("Error: device not connected")
             return
-        
+
         try:
             self.hc.set_current(float(args))
         except Exception as e:
             print(f"Error: {e}")
-    
+
     def do_r(self, unused_args: str = ""):
         """
         r
@@ -162,15 +162,15 @@ class HanmatekCmd(Cmd):
             return
 
         self.hc.show()
-    
+
     def do_q(self, unused_args: str = ""):
         """
         quit
-        
+
         Quit the application
         """
         return True
-    
+
     def do_x(self, unused_args: str = ""):
         """
         quit
@@ -185,8 +185,8 @@ if __name__ == "__main__":
     if 'linux' in platform.lower():
         default_port = "/dev/ttyUSB0" # linux
     else:
-        default_port = "COM1" # windows
-    
+        default_port = "COM13" # windows
+
     parser = ArgumentParser(description='Hanmatek Power Supply Control.')
     parser.add_argument('-p', '--portname', default=default_port, help='set serial port name', type=str)
     args = parser.parse_args()

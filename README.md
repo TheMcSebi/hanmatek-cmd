@@ -1,12 +1,11 @@
 # Hanmatek-Cmd
-Python implementation for to interactiv control of a Hanmatek bench power supply
-The minimalmodbus library is used to read and write data over the power supplies USB interface.
+Python tool to interactively control a Hanmatek bench power supply based on the minimalmodbus Python library.
 
 For a [library version](#lib_ver_), see below.
 
-## Installation
+## Setup
 Install the minimalmodbus library by running `pip -r requirements.txt`.
-On Linux you may also need to grant permission to your user to use the serial interface (/dev/ttyUSB0 in my case).
+On Linux you may also need to grant user permission to the serial interface.
 To do this, add the group "dailup" to your linux user account and restart your shell.
 
 ## Usage
@@ -26,11 +25,11 @@ You can either specify the serial port by appending ` --port COM5` or ` --port /
     q or x           exit
 
 
-If no new input is provided and the enter button is pressed, the previous command will be repeated. This makes it easy to step the voltage up or down continuously.  
+When pressing enter on empty input, the previous command will be repeated. This makes it easy to step the voltage up or down incrementally.
 
-Voltage and current can also be input directly by postfixing the input value with "a" for ampere and "v" for volt, e.g. `4.2v`.  
+Voltage and current can also be input directly by postfixing the input value with "a" for ampere and "v" for volt, e.g. `4.2v`.
 
-The increment and decrement commands support an optional multiplier, e.g. `++4` increases the voltage by 0.4V.  
+The increment and decrement commands support an optional multiplier, e.g. `++4` increases the voltage by 0.4V.
 
 ### Example usage
 
@@ -59,14 +58,14 @@ h.set_current(1.2)
 h.set_power(True)
 
 # display ratio between drawn current and maximum current
-h.print_amp_meter() 
+h.print_amp_meter()
 v = h.get_voltage()
 ```
 
 More examples can be found inside the examples/ folder.
 
 ## Robot Framework
-An example (DeviceControlTest.robot) for this library using the [Robot Framework](https://robotframework.org/) is also included. To run it, run the following command after installing [robotframework](https://pypi.org/project/robotframework/) through pip.
+An example (DeviceControlTest.robot) for this library using the [Robot Framework](https://robotframework.org/) is also included. To use it, use the example below after installing the [robotframework library](https://pypi.org/project/robotframework/).
 
 ```bash
 pip install robotframework

@@ -13,7 +13,7 @@ from HanmatekControl import HanmatekControl
 sleep_time = 900
 spinup_voltage = 8
 current_limit = 1.3
-continuous_voltage = 5.5
+continuous_voltage = 5.67
 
 hc = HanmatekControl(port="COM8")
 hc.set_status(False)
