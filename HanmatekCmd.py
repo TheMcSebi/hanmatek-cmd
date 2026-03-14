@@ -179,6 +179,11 @@ class HanmatekCmd(Cmd):
         Quit the application"""
         return True
 
+    def do_quit(self, unused_args: str = ""):
+        return True
+    def do_exit(self, unused_args: str = ""):
+        return True
+
     def do_pass(self, unused_args: str = ""):
         pass
 
