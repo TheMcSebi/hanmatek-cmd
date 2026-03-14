@@ -1,0 +1,9 @@
+[project]
+name = "hanmatek-cmd"
+version = "0.1.0"
+description = "Single file python library and cmdline application for interfacing with Hanmatek programmable power sources"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "minimalmodbus>=2.1.1",
+]
