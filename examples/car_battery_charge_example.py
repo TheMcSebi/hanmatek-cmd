@@ -1,6 +1,5 @@
 import os, sys
 from time import sleep
-import signal
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from HanmatekControl import HanmatekControl
@@ -22,16 +21,6 @@ FULL_CURRENT_THRESHOLD = 0.15  # stop when current drops below this (A)
 PORT = "COM5"
 
 hc = HanmatekControl(port=PORT)
-hc.set_status(False)
-
-def shutdown(sig=None, frame=None):
-    print("\nshutting down, disabling output...")
-    hc.set_status(False)
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, shutdown)
-
-input("Connect the battery and press Enter to start charging")
 
 print(f"charging at {CHARGE_VOLTAGE} V / {CHARGE_CURRENT} A limit")
 hc.set_voltage(CHARGE_VOLTAGE)
@@ -55,6 +44,11 @@ try:
         sleep(2)
 
     print(f"\nbattery nearly full (current tapered to {current:.2f} A)")
-finally:
-    hc.set_status(False)
-    print("output disabled – remove the battery")
+    print("output left enabled - disconnect manually when ready")
+
+    while True:
+        print("\a", end="", flush=True)
+        sleep(1)
+
+except KeyboardInterrupt:
+    print("\ninterrupted - output left enabled, disconnect manually")
