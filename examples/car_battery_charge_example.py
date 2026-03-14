@@ -1,5 +1,6 @@
-import os, sys
+import os, sys, csv
 from time import sleep
+from datetime import datetime
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from HanmatekControl import HanmatekControl
@@ -22,7 +23,13 @@ PORT = "COM5"
 
 hc = HanmatekControl(port=PORT)
 
+log_path = os.path.join(os.path.dirname(__file__), f"charge_log_{datetime.now():%Y%m%d_%H%M%S}.csv")
+log_file = open(log_path, "w", newline="")
+log_writer = csv.writer(log_file)
+log_writer.writerow(["timestamp", "voltage", "current", "power"])
+
 print(f"charging at {CHARGE_VOLTAGE} V / {CHARGE_CURRENT} A limit")
+print(f"logging to {log_path}")
 hc.set_voltage(CHARGE_VOLTAGE)
 hc.set_current(CHARGE_CURRENT)
 hc.set_status(True)
@@ -32,6 +39,10 @@ try:
         hc.sync_device()
         voltage = hc.get_voltage(cached=True)
         current = hc.get_current(cached=True)
+        power = hc.get_power(cached=True)
+
+        log_writer.writerow([datetime.now().isoformat(), voltage, current, power])
+        log_file.flush()
 
         print(hc.render_amp_meter(current, voltage=voltage), end="\r")
 
@@ -52,3 +63,5 @@ try:
 
 except KeyboardInterrupt:
     print("\ninterrupted - output left enabled, disconnect manually")
+finally:
+    log_file.close()
